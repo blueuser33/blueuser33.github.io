@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <link rel="icon" href="data/imgs/logo.png">
+        <title>FISU World University Games</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+        <script src="libs/js/d3.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/d3-array@3"></script>
+        <script src="https://cdn.jsdelivr.net/npm/d3-geo@3"></script>
+        <script src="https://cdn.jsdelivr.net/npm/d3-geo-projection@4"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.24.0/d3-legend.js"></script>
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+        <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
+
+        <style>
+            html { 
+                overflow-y: scroll; 
+            }
+            .navbar{
+                width:100%;
+                background:#333;
+                overflow:auto;
+                font-family: 'Lato', sans-serif;
+            }
+            .navbar ul{
+                margin:0;
+                padding:0;
+                list-style:none;
+                line-height: 35px;
+                color: black;
+            }
+            .navbar ul li{
+                float:left;
+            }
+            .navbar ul li.navitem{
+                color: black;
+            }
+            .navbar ul li a{
+                text-decoration:none;
+                width:350px;
+                margin-left: 15px;
+                margin-right: 15px;
+                display: block;
+                text-align:center;
+                font-size: 15px;
+                text-transform: uppercase;
+                font-weight: bold;
+                color:rgb(255, 255, 255);
+            }
+            .navbar ul li a:hover{
+                background:white;
+                color: black;
+                border-radius: 10px;
+                transform: translateZ(0);
+                transition: all .12s,box-shadow .8s ease-in;
+            }
+            .navbar ul li a.active{
+                background:rgba(0, 0, 0, 0.479);
+                border-radius: 10px;
+            }
+            .toggle-nav{
+                color:rgb(255, 255, 255);
+                text-decoration:none;
+                display: none;
+            } 
+            #header{
+                background-image: url('data/imgs/background.png');
+                height: 165px;
+                background-repeat: no-repeat;
+                background-attachment: fixed;
+                background-size:contain ;
+                color: #FFFFFF;
+                margin-bottom: -0.2cm;
+            }
+            .footer {
+            margin-top: auto;
+                position: absolute;
+                left: 0;
+                bottom: 0;
+                width: 100%;
+                background-color: #333;
+                color: white;
+                text-align: center;
+            }
+            #tooltip {
+                position: absolute;
+                opacity: 0;
+                top: 0;
+                left: 0;
+                width: auto;
+                padding: 10px;
+                background: white;
+                font-family: sans-serif;
+                font-size: medium;
+                border-radius: 2px;
+                line-height: 1;
+            }
+            #container {
+                width: 100vw;
+                height: 70vh;
+            }
+            #canvas {
+                width: 100vw;
+                height: 70vh;
+                background-color: white;
+            }
+            path.path_geo {
+                stroke-width: .6px;
+                stroke: white;
+            }
+            g.legendThreshold {
+            font-size: 16px;
+            font-family: sans-serif;
+            }
+            g.caption {
+                fill: #000;
+                text-anchor: start;
+                font-weight: bold;
+            }
+            .button-9 {
+                appearance: button;
+                backface-visibility: hidden;
+                background-color: rgb(231, 107, 49);
+                border-radius: 6px;
+                border-width: 0;
+                box-shadow: rgba(50, 50, 93, .1) 0 0 0 1px inset,rgba(50, 50, 93, .1) 0 2px 5px 0,rgba(0, 0, 0, .07) 0 1px 1px 0;
+                box-sizing: border-box;
+                color: #fff;
+                cursor: pointer;
+                font-family: -apple-system,system-ui,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif;
+                font-size: 100%;
+                height: 30px;
+                line-height: 1.15;
+                margin: 1px 2px 25px;
+                outline: none;
+                overflow: hidden;
+                padding: 0 25px;
+                position: relative;
+                text-align: center;
+                text-transform: none;
+                transform: translateZ(0);
+                transition: all .2s,box-shadow .08s ease-in;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: manipulation;
+                width: 80;
+            }
+            .button-9:disabled {
+                cursor: default;
+            }
+            .button-9:hover {
+                background-color: #00000075;
+            }
+
+            .button-9:focus {
+                box-shadow: rgba(93, 50, 70, 0.1) 0 0 0 1px inset, rgba(50, 50, 93, .2) 0 6px 15px 0, rgba(0, 0, 0, .1) 0 2px 2px 0, rgba(214, 124, 50, 0.3) 0 0 0 4px;
+            }
+        </style>
+    </head>
+
+    <body>
+
+        <div id="header">
+        </div>
+          <!-- <div style="height: 15px; background-color: #0b6cfd3b"></div><h2 style="background-color:#0b6cfd3b ; text-align: center ; font-family: 'Lato', sans-serif; margin: 0;"><a><img src="https://github.com/rohang2504/DV_MainProject/raw/main/images/olympics.png" width="60 height="60" alt=""></a> Olympics Performance 1960-2016</h2><div style="height: 15px; background-color: #0b6cfd3b"></div> -->
+          <nav class="navbar sticky-top navbar-expand-sm" style="background-color: #053781;">
+        
+            <ul class="navbar-nav mx-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="index.html">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" href="geo_spatial.html">Medal Tally (Countries)</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="tornado.html">High Performance Groups</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="scatter.html">GDP vs Medals Secured</a>
+              </li>
+            </ul>
+          </nav>
+          <br>
+
+        <h6 style="text-align: center;">Select the range of year to filter the data:</h6>
+        <div style="text-align: center;">
+            
+            <button class="button-9" onclick="location.href='geo_spat_1960-80.html'">1960-1980</button>
+            <button class="button-9" onclick="location.href='geo_spat_1984-00.html'">1984-2000</button>
+            <button class="button-9" onclick="location.href='geo_spat_2002-16.html'">2002-2016</button>
+            <button class="button-9" onclick="location.href='geo_spatial.html'">Over the years</button>
+
+        </div>
+
+        <h3 style="text-align: center;">Medal Tally for 2002-2016 Years Olympic Games</h3>
+        <div id="container">
+            <svg id="canvas" viewBox="0 0 1600 800">
+
+            </svg>
+        </div>
+
+        <div id="tooltip"></div>
+
+        <script>
+
+            /******************* 2002-2016 choropleth ************************/
+
+            let svg = d3.select('svg');
+
+            // loading the sources
+            let medal_data = "data/2002-2016.csv";
+            let geojson = "data/countries.geojson";
+
+
+            let projection = d3.geoPatterson()
+                                .scale(220)
+                                .translate([850, 400]);
+
+            Promise.all(
+                [
+                    d3.json(geojson),
+                    d3.csv(medal_data)],d3.autoType()).then(main)
+            function main(data) {
+
+                let geoJson = data[0].features;
+
+                let geo_gen = d3.geoPath().projection(projection);
+
+                // let olymp = d3.group(data[1], function(d){return d.code;});
+                let olymp = d3.group(data[1], function(d){
+                    return d.code;
+                });
+
+                //console.log(olymp.get('IND'));
+                
+                let medal_tal = d3.extent(data[1], function (d) {
+                    return +d.medal
+                });
+
+                medal_tal[0]=1
+                
+                let colorscheme = d3.schemeReds[6];
+                colorscheme.unshift("#eee");
+                let colorScale = d3.scaleThreshold()
+                    .domain([1,201, 501, 801, 1201, 2001])
+                    .range(colorscheme);
+
+
+                // Legend
+                let g = svg.append("g")
+                    .attr("class", "legendThreshold")
+                    .attr("transform", "translate(10,70)");
+                g.append("text")
+                    .attr("class", "caption")
+                    .attr("x", 0)
+                    .attr("y", -6)
+                    .text("Medals");
+                var labels = ['0', '1-200', '201-500', '501-800', '801-1200', '1201-2000', '> 2000'];
+                var legend = d3.legendColor()
+                    .labels(function (d) { return labels[d.i]; })
+                    .shapePadding(4)
+                    .scale(colorScale);
+                svg.select(".legendThreshold")
+                    .call(legend);
+
+                // let colorScale = d3.scaleLog()
+                //                 .domain(medal_tal)
+                //                 .range(["white", "rgb(253, 75, 21)"])
+                //                 .interpolate(d3.interpolateCubehelix.gamma(2))
+                
+                let tooltip = d3.select("#tooltip");
+
+                let mapCanvas = svg.append('g')
+                mapCanvas.selectAll('path')
+                    .data(geoJson)
+                    .enter()
+                    .append('path')
+                    .attr("class", "path_geo")
+                    .attr("d", geo_gen)
+                    .attr("fill","white")
+                    .on("mouseenter", (m, d) => {
+                        tooltip.transition()
+                            .duration(200)
+                            .style("opacity", .9)
+                        tooltip.html("Country: " + d.properties.ADMIN +
+                            "<br>" + "Total Medals: " + olymp.get(d.properties.ISO_A3)[0].medal +
+                            "<br>" + "Rank: " + olymp.get(d.properties.ISO_A3)[0].rank)
+                            .style("left", m.clientX + "px")
+                            .style("top", m.clientY + "px");
+                    })
+                    .on("mousemove", (m, d) => {
+                        tooltip.style("opacity", .9)
+                    })
+                    .on("mouseout", (m, d) => {
+                        tooltip.transition()
+                            .duration(200)
+                            .style("opacity", 0)
+                    })
+                    .transition()
+                    .delay(function (d,i){return i*4})
+                    .duration(500)
+                    .style("fill", function (d) {
+                        try {
+                            // //console.log(olymp.get(d.properties.ISO_A3).medal);
+                            // d.medal = olymp.get(d.properties.ISO_A3)[0].medal || 0;
+                            // return colorScale(d.medal);
+
+                            return colorScale(parseInt(olymp.get(d.properties.ISO_A3)[0].medal));
+                        }
+                        catch(error) {
+                            return "whitesmoke";
+                        }
+                    })
+
+            //--------zooming---------//
+            svg.call(d3.zoom()
+                .extent([[0,0],[1000,800]])
+                .scaleExtent([1,8])
+                .on("zoom", zoomed)
+            )
+
+            function zoomed({transform}) {
+                mapCanvas.attr("transform", transform)
+            }
+
+            }
+
+        </script>
+    </body>
+</html>

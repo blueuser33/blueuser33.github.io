@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<!-- Load d3.js -->
+<head>
+  <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
+  <meta charset="UTF-8">
+  <link rel="icon" href="data/imgs/logo.png">
+  <title>FISU World University Games</title>
+  <script src="https://d3js.org/d3.v4.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="libs/css/styles.css" />
+  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+  <script src="https://d3js.org/d3.v5.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/1.6.19/topojson.js"></script>
+  <script src="https://d3js.org/d3-geo-projection.v2.js"></script>
+  <script src="libs/js/tree.js" async></script>
+  <script src="libs/js/table.js" async></script>
+  <script src="libs/js/gap_plot.js" async></script>
+  <script src="libs/js/script.js" async></script>
+  <style>
+    .navbar{
+    width:100%;
+    background:#333;
+    overflow:auto;
+    font-family:'Lato', sans-serif;
+}
+.navbar ul{
+    margin:0;
+    padding:0;
+    list-style:none;
+    line-height: 35px;
+    color: black;
+}
+.navbar ul li{
+    float:left;
+}
+.navbar ul li a{
+  text-decoration:none;
+  width:350px;
+  margin-left: 15px;
+  margin-right: 15px;
+  display: block;
+  text-align:center;
+  font-size: 15px;
+  text-transform: uppercase;
+  font-weight: bold;
+  color:rgb(255, 255, 255);
+}
+.navbar ul li a:hover{
+    background:white;
+    color: black;
+    border-radius: 10px;
+    transform: translateZ(0);
+    transition: all .12s,box-shadow .8s ease-in;
+}
+.navbar ul li a.active{
+  background:rgba(0, 0, 0, 0.479);
+    border-radius: 10px;
+}
+.toggle-nav{
+    color:rgb(255, 255, 255);
+    text-decoration:none;
+    display: none;
+} 
+#header{
+        background-image: url('data/imgs/background.png');
+        height: 165px;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: contain;
+        color: #FFFFFF;
+        margin-bottom: -0.2cm;
+    }
+    .footer {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        background-color: #333;
+        color: white;
+        text-align: center;
+  }
+  html { 
+  overflow-y: scroll; 
+}
+</style>
+</head>
+
+<body>
+  <div id="header">
+  </div>
+  <!-- <div style="height: 15px; background-color: #0b6cfd3b"></div><h2 style="background-color:#0b6cfd3b ; text-align: center ; font-family: 'Lato', sans-serif; margin: 0;"><a><img src="https://github.com/rohang2504/DV_MainProject/raw/main/images/olympics.png" width="60 height="60" alt=""></a> Olympics Performance 1960-2016</h2><div style="height: 15px; background-color: #0b6cfd3b"></div> -->
+  <nav class="navbar sticky-top navbar-expand-sm" style="background-color: #053781;">
+    <!-- <ul>
+    <img src="/data/imgs/corsair.png" width="45" height="45" alt=""></a>
+    </ul> -->
+    <ul class="navbar-nav mx-auto">
+      <li class="nav-item">
+        <a class="nav-link " href="index.html">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="geo_spatial.html">Medal Tally (Countries)</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="tornado.html">High Performance Groups</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" href="scatter.html">GDP vs Medals Secured</a>
+      </li>
+    </ul>
+  </nav>
+  <br>
+
+<!-- *********************************************************************************************************************************************************************************************** -->
+<div class="header">
+  <h1>Scatter Plot - GDP vs Medals Secured</h1>
+</div>
+
+<div class="topnav" id="topnavbar">
+
+
+
+</div>
+
+<div class="wrapper" style="display: inline-block;">
+
+    <div id="scatter-plot" class="view" style="width: 40%; float: left; padding-right: 20px;">
+
+    </div>
+
+
+    <div class="innerWrapper" style=" float: right; width: 50%">
+    <table id="matchTable" style="text-align: right;">
+        <thead>
+        <tr>
+            <th class="Team">Team</th>
+            <td class="Gold"> Gold </td>
+            <td class="Silver">Silver</td>
+            <td class="Bronze">Bronze</td>
+            <td class="Total">Total</td>
+        </tr>
+
+        </thead>
+
+        <tbody>
+
+        </tbody>
+    </table>
+    </div>
+</div>
+
+</body>
